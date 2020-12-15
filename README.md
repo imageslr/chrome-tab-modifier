@@ -1,3 +1,15 @@
+**This is a fork version of Tab Modifier with a little bit change, to support <mark>unique rules by url</mark>.**
+
+Here is the only change that removing duplicated rules before add a new rule:
+
+```js
+tab_modifier.rules = tab_modifier.rules.filter(({ url_fragment }) => url_fragment != tab.url)
+```
+
+You can load unpacked extension in project `/dist` folder.
+
+---
+
 # <img src="dist/img/icon_32.png" alt="icon"> Tab Modifier
 
 Take control of your tabs.

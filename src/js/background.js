@@ -115,7 +115,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
             }
             
             let rule = {
-                name: 'Rule created from right-click (' + tab.url.replace(/(^\w+:|^)\/\//, '').substring(0, 15) + '...)',
+                name: tab.url.replace(/(^\w+:|^)\/\//, '').substring(0, 15),
                 detection: 'CONTAINS',
                 url_fragment: tab.url,
                 tab: {
@@ -129,6 +129,8 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
                     url_matcher: null
                 }
             };
+
+            tab_modifier.rules = tab_modifier.rules.filter(({ url_fragment }) => url_fragment != tab.url)
             
             tab_modifier.rules.push(rule);
             
