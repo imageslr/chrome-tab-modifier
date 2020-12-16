@@ -101,9 +101,7 @@ chrome.contextMenus.create({
 });
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-    if (info.menuItemId === 'rename-tab') {
-        let title = prompt('Enter the new title, a Tab rule will be automatically created for you based on current URL');
-        
+    if (info.menuItemId === 'rename-tab') {        
         getStorage(function (tab_modifier) {
             if (tab_modifier === undefined) {
                 tab_modifier = {
@@ -113,6 +111,16 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
                     rules: []
                 };
             }
+
+            let oldTitle = ""
+            tab_modifier.rules = tab_modifier.rules.filter(({ tab: { title }, url_fragment }) => {
+                if (url_fragment != tab.url) return true;
+                oldTitle = title
+                return false
+            })
+
+            let title = prompt('Enter the new title, a Tab rule will be automatically created for you based on current URL', oldTitle);
+            if (title === null) return
             
             let rule = {
                 name: tab.url.replace(/(^\w+:|^)\/\//, '').substring(0, 15),
@@ -130,8 +138,6 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
                 }
             };
 
-            tab_modifier.rules = tab_modifier.rules.filter(({ url_fragment }) => url_fragment != tab.url)
-            
             tab_modifier.rules.push(rule);
             
             chrome.storage.local.set({ tab_modifier: tab_modifier });
