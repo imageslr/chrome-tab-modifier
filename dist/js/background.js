@@ -122,23 +122,24 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
             let title = prompt('Enter the new title, a Tab rule will be automatically created for you based on current URL', oldTitle);
             if (title === null) return
             
-            let rule = {
-                name: tab.url.replace(/(^\w+:|^)\/\//, '').substring(0, 15),
-                detection: 'CONTAINS',
-                url_fragment: tab.url,
-                tab: {
-                    title: title,
-                    icon: null,
-                    pinned: false,
-                    protected: false,
-                    unique: false,
-                    muted: false,
-                    title_matcher: null,
-                    url_matcher: null
-                }
-            };
-
-            tab_modifier.rules.push(rule);
+            if (title != "") {
+                let rule = {
+                    name: tab.url.replace(/(^\w+:|^)\/\//, '').substring(0, 15),
+                    detection: 'CONTAINS',
+                    url_fragment: tab.url,
+                    tab: {
+                        title: title,
+                        icon: null,
+                        pinned: false,
+                        protected: false,
+                        unique: false,
+                        muted: false,
+                        title_matcher: null,
+                        url_matcher: null
+                    }
+                };
+                tab_modifier.rules.push(rule);
+            }
             
             chrome.storage.local.set({ tab_modifier: tab_modifier });
             
