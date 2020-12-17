@@ -143,7 +143,10 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
             
             chrome.storage.local.set({ tab_modifier: tab_modifier });
             
-            chrome.tabs.reload(tab.id);
+            chrome.tabs.executeScript(tab.id, {
+                code: `document.title = "${title}"`
+            });
+            // chrome.tabs.reload(tab.id); // not reload
         });
     }
 });
