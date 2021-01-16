@@ -124,7 +124,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
             
             if (title != "") {
                 let rule = {
-                    name: tab.url.replace(/(^\w+:|^)\/\//, '').substring(0, 15),
+                    name: title || tab.title,
                     detection: 'CONTAINS',
                     url_fragment: tab.url,
                     tab: {
