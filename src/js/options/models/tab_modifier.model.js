@@ -2,7 +2,8 @@ app.factory('TabModifier', ['Rule', function (Rule) {
     
     var TabModifier = function (properties) {
         this.settings = {
-            enable_new_version_notification: false
+            enable_new_version_notification: false,
+            json_blob_url: ""
         };
         this.rules    = [];
         

@@ -108,6 +108,8 @@ app.controller('MainController', ['$scope', '$mdSidenav', '$q', 'Analytics', fun
 
 app.controller('SettingsController', ['$scope', '$mdDialog', '$mdToast', '$location', 'TabModifier', 'Analytics', function ($scope, $mdDialog, $mdToast, $location, TabModifier, Analytics) {
 
+    var jsonBlobInput = document.getElementById("json_blob_rule")
+
     var tab_modifier = new TabModifier();
 
     chrome.storage.local.get('tab_modifier', function (items) {
@@ -124,6 +126,17 @@ app.controller('SettingsController', ['$scope', '$mdDialog', '$mdToast', '$locat
 
         $scope.$apply();
     });
+
+    // JSON Blob
+    $scope.saveJsonBlobUrl = function (evt) {
+        $scope.tab_modifier.settings.json_blob_url = jsonBlobInput.value
+        $scope.tab_modifier.sync()
+        $mdToast.show(
+            $mdToast.simple()
+                .textContent('Your tab rules will been saved in the Json Blob url regularly (per minute).')
+                .position('top right')
+        );
+    };
 
     // Import tab rules action
     $scope.showImportDialog = function (evt) {
@@ -431,46 +444,6 @@ app.controller('FormModalController', ['$scope', '$mdDialog', 'rule', 'icon_list
     
 }]);
 
-app.directive('inputFileButton', function () {
-    return {
-        restrict: 'E',
-        link: function (scope, elem) {
-            var button = elem.find('button'),
-                input  = elem.find('input');
-            
-            input.css({ display: 'none' });
-            
-            button.bind('click', function () {
-                input[0].click();
-            });
-        }
-    };
-});
-
-app.directive('onReadFile', ['$parse', function ($parse) {
-    return {
-        restrict: 'A',
-        scope: false,
-        link: function (scope, element, attrs) {
-            var fn = $parse(attrs.onReadFile);
-            
-            element.on('change', function (onChangeEvent) {
-                var reader = new FileReader();
-                
-                reader.onload = function (onLoadEvent) {
-                    scope.$apply(function () {
-                        fn(scope, {
-                            $fileContent: onLoadEvent.target.result
-                        });
-                    });
-                };
-                
-                reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
-            });
-        }
-    };
-}]);
-
 app.factory('Rule', function () {
     
     var Rule = function (properties) {
@@ -503,7 +476,8 @@ app.factory('TabModifier', ['Rule', function (Rule) {
     
     var TabModifier = function (properties) {
         this.settings = {
-            enable_new_version_notification: false
+            enable_new_version_notification: false,
+            json_blob_url: ""
         };
         this.rules    = [];
         
@@ -591,4 +565,44 @@ app.factory('TabModifier', ['Rule', function (Rule) {
     
     return TabModifier;
     
+}]);
+
+app.directive('inputFileButton', function () {
+    return {
+        restrict: 'E',
+        link: function (scope, elem) {
+            var button = elem.find('button'),
+                input  = elem.find('input');
+            
+            input.css({ display: 'none' });
+            
+            button.bind('click', function () {
+                input[0].click();
+            });
+        }
+    };
+});
+
+app.directive('onReadFile', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        scope: false,
+        link: function (scope, element, attrs) {
+            var fn = $parse(attrs.onReadFile);
+            
+            element.on('change', function (onChangeEvent) {
+                var reader = new FileReader();
+                
+                reader.onload = function (onLoadEvent) {
+                    scope.$apply(function () {
+                        fn(scope, {
+                            $fileContent: onLoadEvent.target.result
+                        });
+                    });
+                };
+                
+                reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
+            });
+        }
+    };
 }]);

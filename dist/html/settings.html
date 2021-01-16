@@ -53,6 +53,25 @@
             <md-list>
                 <md-list-item class="md-2-line md-no-proxy">
                     <div class="md-list-item-text">
+                        <h3><a href="https://jsonblob.com/">JSON Blob</a> url </h3>
+                        <p>Regularly save your rules to the JSON Blob url.</p>
+                        <md-input-container class="md-margin-bottom-0" style="display: block;">
+                            <input id="json_blob_rule" type="text" ng-model="tab_modifier.settings.json_blob_url" placeholder="e.g. https://jsonblob.com/api/jsonBlob/b123af21-5c31-13e4-ac2d-d222d4af3441" required>
+                        </md-input-container>
+                    </div>
+
+                    <div class="md-secondary">
+                        <md-button class="md-raised md-accent" ng-click="saveJsonBlobUrl($event)">
+                            <md-icon md-svg-icon="save"></md-icon>
+                            &nbsp;Save
+                        </md-button>
+                    </div>
+                </md-list-item>
+
+                <md-divider></md-divider>
+
+                <md-list-item class="md-2-line md-no-proxy">
+                    <div class="md-list-item-text">
                         <h3>Import tab rules</h3>
                         <p>Restore your tab rules settings from an external JSON file.</p>
                     </div>

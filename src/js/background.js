@@ -79,6 +79,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
     switch (details.reason) {
         case 'install':
             openOptionsPage('install');
+            chrome.alarms.create('saveToJsonBlob', { periodInMinutes: 1 });
             break;
         case 'update':
             getStorage(function (tab_modifier) {
@@ -94,6 +95,30 @@ chrome.runtime.onInstalled.addListener(function (details) {
     }
 });
 
+chrome.alarms.onAlarm.addListener((alarm) => {
+    switch (alarm.name) {
+        case "saveToJsonBlob":
+            console.log("Prepare to save rules to Jsob Blob...")
+            getStorage(function (tab_modifier) {
+                if (tab_modifier === undefined) return;
+                if (!tab_modifier.settings || !tab_modifier.settings.json_blob_url) return;
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("PUT", tab_modifier.settings.json_blob_url, true);
+                xhr.setRequestHeader("Content-type", "application/json");
+                xhr.onload = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        console.log("Successfully save to Json Blob. Result: ", xhr.responseText)
+                    } else {
+                        console.log("Failed to save to Json Blob. Result: ", xhr.responseText)
+                    }
+                };
+                xhr.send(JSON.stringify(tab_modifier, null, 4));
+            })
+        break;
+    }
+});
+
 chrome.contextMenus.create({
     id: 'rename-tab',
     title: 'Rename Tab',
@@ -106,7 +131,8 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
             if (tab_modifier === undefined) {
                 tab_modifier = {
                     settings: {
-                        enable_new_version_notification: false
+                        enable_new_version_notification: false,
+                        json_blob_url: ""
                     },
                     rules: []
                 };

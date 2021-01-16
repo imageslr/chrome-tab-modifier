@@ -1,5 +1,7 @@
 app.controller('SettingsController', ['$scope', '$mdDialog', '$mdToast', '$location', 'TabModifier', 'Analytics', function ($scope, $mdDialog, $mdToast, $location, TabModifier, Analytics) {
 
+    var jsonBlobInput = document.getElementById("json_blob_rule")
+
     var tab_modifier = new TabModifier();
 
     chrome.storage.local.get('tab_modifier', function (items) {
@@ -16,6 +18,17 @@ app.controller('SettingsController', ['$scope', '$mdDialog', '$mdToast', '$locat
 
         $scope.$apply();
     });
+
+    // JSON Blob
+    $scope.saveJsonBlobUrl = function (evt) {
+        $scope.tab_modifier.settings.json_blob_url = jsonBlobInput.value
+        $scope.tab_modifier.sync()
+        $mdToast.show(
+            $mdToast.simple()
+                .textContent('Your tab rules will been saved in the Json Blob url regularly (per minute).')
+                .position('top right')
+        );
+    };
 
     // Import tab rules action
     $scope.showImportDialog = function (evt) {
