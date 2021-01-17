@@ -23,11 +23,45 @@ getStorage = function (callback) {
     });
 };
 
+backupNotify = function (message) {
+    chrome.notifications.create(null, { 
+        type: "basic",
+        iconUrl: "img/icon_128.png",
+        title: "Tab Modifier Backup",
+        message
+    })
+}
+
+saveToJsonBlob = function () {
+    console.log("Prepare to save rules to Jsob Blob...")
+    getStorage(function (tab_modifier) {
+        if (tab_modifier === undefined) return;
+        if (!tab_modifier.settings || !tab_modifier.settings.json_blob_url) return;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", tab_modifier.settings.json_blob_url, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onload = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                console.log("Successfully save to Json Blob. Result: ", xhr.responseText)
+                backupNotify("Successfully save your rules to Json Blob")
+            } else {
+                let msg = `Failed to save to Json Blob. Result: ${JSON.stringify(xhr.responseText)}`
+                console.log(msg)
+                backupNotify(msg)
+            }
+        };
+        xhr.send(JSON.stringify(tab_modifier, null, 4));
+    })
+}
+
 // --------------------------------------------------------------------------------------------------------
 // Events
 
 chrome.runtime.onMessage.addListener(function (message, sender) {
     switch (message.action) {
+        case 'saveToJsonBlob': 
+            saveToJsonBlob();
         case 'setUnique':
             chrome.tabs.get(sender.tab.id, function (current_tab) {
                 if (current_tab === undefined) {
@@ -79,7 +113,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
     switch (details.reason) {
         case 'install':
             openOptionsPage('install');
-            chrome.alarms.create('saveToJsonBlob', { periodInMinutes: 1 });
+            chrome.alarms.create('saveToJsonBlob', { periodInMinutes: 1 * 60 * 24 });
             break;
         case 'update':
             getStorage(function (tab_modifier) {
@@ -98,23 +132,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 chrome.alarms.onAlarm.addListener((alarm) => {
     switch (alarm.name) {
         case "saveToJsonBlob":
-            console.log("Prepare to save rules to Jsob Blob...")
-            getStorage(function (tab_modifier) {
-                if (tab_modifier === undefined) return;
-                if (!tab_modifier.settings || !tab_modifier.settings.json_blob_url) return;
-
-                var xhr = new XMLHttpRequest();
-                xhr.open("PUT", tab_modifier.settings.json_blob_url, true);
-                xhr.setRequestHeader("Content-type", "application/json");
-                xhr.onload = function () {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        console.log("Successfully save to Json Blob. Result: ", xhr.responseText)
-                    } else {
-                        console.log("Failed to save to Json Blob. Result: ", xhr.responseText)
-                    }
-                };
-                xhr.send(JSON.stringify(tab_modifier, null, 4));
-            })
+            saveToJsonBlob()
         break;
     }
 });

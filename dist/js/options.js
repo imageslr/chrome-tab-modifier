@@ -131,9 +131,10 @@ app.controller('SettingsController', ['$scope', '$mdDialog', '$mdToast', '$locat
     $scope.saveJsonBlobUrl = function (evt) {
         $scope.tab_modifier.settings.json_blob_url = jsonBlobInput.value
         $scope.tab_modifier.sync()
+        chrome.runtime.sendMessage({ action: 'saveToJsonBlob' });
         $mdToast.show(
             $mdToast.simple()
-                .textContent('Your tab rules will been saved in the Json Blob url regularly (per minute).')
+                .textContent('Your tab rules will been saved in the Json Blob url regularly per day.')
                 .position('top right')
         );
     };

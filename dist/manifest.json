@@ -42,6 +42,7 @@
         "tabs",
         "storage",
         "contextMenus",
-        "alarms"
+        "alarms",
+        "notifications"
     ]
 }
