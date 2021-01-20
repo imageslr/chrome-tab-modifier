@@ -1,9 +1,9 @@
 ﻿{
     "manifest_version": 2,
-    "name": "Tab Modifier",
+    "name": "Tab Renamer",
     "version": "0.22.0",
     "description": "Take control of your tabs",
-    "homepage_url": "https://github.com/sylouuu/chrome-tab-modifier",
+    "homepage_url": "https://github.com/imageslr/chrome-tab-modifier",
 
     "icons": {
         "16": "img/icon_16.png",
