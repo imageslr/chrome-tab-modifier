@@ -7,7 +7,7 @@ chrome.storage.local.get('tab_modifier', function (items) {
     
     var tab_modifier = items.tab_modifier, rule = null, processPage;
     
-    processPage = function () {
+    processPage = async function () {
         // Check if a rule is available
         for (var i = 0; i < tab_modifier.rules.length; i++) {
             if (tab_modifier.rules[i].detection === undefined || tab_modifier.rules[i].detection === 'CONTAINS') {
@@ -98,17 +98,27 @@ chrome.storage.local.get('tab_modifier', function (items) {
          * @param current_title
          * @returns {*}
          */
-        processTitle = function (current_url, current_title) {
+        processTitle = async function (current_url, current_title) {
             var title = rule.tab.title, matches = title.match(/\{([^}]+)}/g), i;
             
             // Handle curly braces tags inside title
             if (matches !== null) {
                 var selector, text;
                 
+                var syncGetTextBySelector = () => new Promise((resolve) => {
+                    // if the element already exists, directly enter the callback function.
+                    // else when the element is created, enter the callback function.
+                    // TODO: watch the element's change event
+                    document.arrive(selector, function() {
+                        text = getTextBySelector(selector);
+                        title = updateTitle(title, matches[i], text);
+                        resolve()
+                    });
+                })
+                
                 for (i = 0; i < matches.length; i++) {
-                    selector = matches[i].substring(1, matches[i].length - 1);
-                    text     = getTextBySelector(selector);
-                    title    = updateTitle(title, matches[i], text);
+                    selector = matches[i].substring(1, matches[i].length - 1); 
+                    await syncGetTextBySelector()
                 }
             }
             
@@ -177,7 +187,7 @@ chrome.storage.local.get('tab_modifier', function (items) {
         // Set title
         if (rule.tab.title !== null) {
             if (document.title !== null) {
-                document.title = processTitle(location.href, document.title);
+                document.title = await processTitle(location.href, document.title);
             }
         }
         
@@ -188,9 +198,9 @@ chrome.storage.local.get('tab_modifier', function (items) {
             if (title_changed_by_me === true) {
                 title_changed_by_me = false;
             } else {
-                mutations.forEach(function () {
+                mutations.forEach(async function () {
                     if (rule.tab.title !== null) {
-                        document.title = processTitle(location.href, document.title);
+                        document.title = await processTitle(location.href, document.title);
                     }
                     
                     title_changed_by_me = true;
