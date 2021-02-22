@@ -120,4 +120,14 @@ app.controller('SettingsController', ['$scope', '$mdDialog', '$mdToast', '$locat
         });
     };
 
+    // Hide context menu item
+    $scope.switchHideMenuItem = function (evt) {
+        tab_modifier.sync();
+        if (tab_modifier.settings.hide_right_click_menu_item === true) {
+            chrome.runtime.sendMessage({ action: 'hideRightClickMenuItem' });
+        } else {
+            chrome.runtime.sendMessage({ action: 'showRightClickMenuItem' });
+        }
+    }
+
 }]);

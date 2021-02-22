@@ -84,46 +84,6 @@ app.run(['$rootScope', '$location', 'Analytics', function ($rootScope, $location
     
 }]);
 
-app.directive('inputFileButton', function () {
-    return {
-        restrict: 'E',
-        link: function (scope, elem) {
-            var button = elem.find('button'),
-                input  = elem.find('input');
-            
-            input.css({ display: 'none' });
-            
-            button.bind('click', function () {
-                input[0].click();
-            });
-        }
-    };
-});
-
-app.directive('onReadFile', ['$parse', function ($parse) {
-    return {
-        restrict: 'A',
-        scope: false,
-        link: function (scope, element, attrs) {
-            var fn = $parse(attrs.onReadFile);
-            
-            element.on('change', function (onChangeEvent) {
-                var reader = new FileReader();
-                
-                reader.onload = function (onLoadEvent) {
-                    scope.$apply(function () {
-                        fn(scope, {
-                            $fileContent: onLoadEvent.target.result
-                        });
-                    });
-                };
-                
-                reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
-            });
-        }
-    };
-}]);
-
 app.controller('HelpController', function () {
     
 });
@@ -268,6 +228,16 @@ app.controller('SettingsController', ['$scope', '$mdDialog', '$mdToast', '$locat
         });
     };
 
+    // Hide context menu item
+    $scope.switchHideMenuItem = function (evt) {
+        tab_modifier.sync();
+        if (tab_modifier.settings.hide_right_click_menu_item === true) {
+            chrome.runtime.sendMessage({ action: 'hideRightClickMenuItem' });
+        } else {
+            chrome.runtime.sendMessage({ action: 'showRightClickMenuItem' });
+        }
+    }
+
 }]);
 
 app.controller('TabRulesController', ['$scope', '$routeParams', '$http', '$mdDialog', '$mdMedia', '$mdToast', 'Rule', 'TabModifier', 'Analytics', function ($scope, $routeParams, $http, $mdDialog, $mdMedia, $mdToast, Rule, TabModifier, Analytics) {
@@ -380,8 +350,6 @@ app.controller('TabRulesController', ['$scope', '$routeParams', '$http', '$mdDia
     
     // Disable a rule
     $scope.disable = function (evt, rule) {
-        console.log(rule)
-        console.log(tab_modifier)
         tab_modifier.sync();
 
         $mdToast.show(
@@ -498,6 +466,46 @@ app.controller('FormModalController', ['$scope', '$mdDialog', 'rule', 'icon_list
     
 }]);
 
+app.directive('inputFileButton', function () {
+    return {
+        restrict: 'E',
+        link: function (scope, elem) {
+            var button = elem.find('button'),
+                input  = elem.find('input');
+            
+            input.css({ display: 'none' });
+            
+            button.bind('click', function () {
+                input[0].click();
+            });
+        }
+    };
+});
+
+app.directive('onReadFile', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        scope: false,
+        link: function (scope, element, attrs) {
+            var fn = $parse(attrs.onReadFile);
+            
+            element.on('change', function (onChangeEvent) {
+                var reader = new FileReader();
+                
+                reader.onload = function (onLoadEvent) {
+                    scope.$apply(function () {
+                        fn(scope, {
+                            $fileContent: onLoadEvent.target.result
+                        });
+                    });
+                };
+                
+                reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
+            });
+        }
+    };
+}]);
+
 app.factory('Rule', function () {
     
     var Rule = function (properties) {
@@ -532,6 +540,7 @@ app.factory('TabModifier', ['Rule', function (Rule) {
     var TabModifier = function (properties) {
         this.settings = {
             enable_new_version_notification: false,
+            hide_right_click_menu_item: false,
             json_blob_url: ""
         };
         this.rules    = [];

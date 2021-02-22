@@ -102,6 +102,16 @@ chrome.runtime.onMessage.addListener(function (message, sender) {
                 muted: true
             });
             break;
+        case 'hideRightClickMenuItem':
+            chrome.contextMenus.removeAll();
+            break;
+        case 'showRightClickMenuItem':
+            chrome.contextMenus.create({
+                id: 'rename-tab',
+                title: 'Rename Tab',
+                contexts: ['all']
+            });
+            break;
     }
 });
 
@@ -137,11 +147,16 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     }
 });
 
-chrome.contextMenus.create({
-    id: 'rename-tab',
-    title: 'Rename Tab',
-    contexts: ['all']
-});
+getStorage(function (tab_modifier) {
+    if (tab_modifier !== undefined && tab_modifier.settings.hide_right_click_menu_item === true) {
+        return;
+    }
+    contextMenuItemId = chrome.contextMenus.create({
+        id: 'rename-tab',
+        title: 'Rename Tab',
+        contexts: ['all']
+    });
+})
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
     if (info.menuItemId === 'rename-tab') {        

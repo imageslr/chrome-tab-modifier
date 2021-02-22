@@ -3,6 +3,7 @@
 **This is a fork version of Tab Modifier with a little bit change.**
 1. [New Feature] Support <mark>unique rules by url</mark>,
 2. [New Feature] Disable a rule temporarily,
+3. [New Feature] Allow to hide right-click menu item.
 3. [Bug Fix] Selector grammar not working when element is lazy-loaded. 
 
 You can load unpacked extension in project `/dist` folder.

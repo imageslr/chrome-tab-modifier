@@ -28,7 +28,7 @@
     // Core
     // ------------------------------------------------------------------------------------------------------
 
-    gulp.task('build_core', ['build_background_and_content_scripts']);
+    gulp.task('build_core', ['build_background_scripts', 'build_content_scripts']);
 
     gulp.task('build_background_scripts', function () {
         return gulp
@@ -36,7 +36,7 @@
             .pipe(gulp.dest('dist/js'));
     });
 
-    gulp.task('build_background_and_content_scripts', function () {
+    gulp.task('build_content_scripts', function () {
         return gulp
             .src(['src/js/libs/arrive.min.js', 'src/js/content.js'])
             .pipe(concat("content.js"))
