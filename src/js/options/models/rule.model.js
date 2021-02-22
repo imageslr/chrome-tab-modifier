@@ -14,6 +14,7 @@ app.factory('Rule', function () {
             title_matcher: null,
             url_matcher: null
         };
+        this.disabled     = false;
         
         angular.extend(this, properties);
     };

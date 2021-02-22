@@ -180,7 +180,8 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
                         muted: false,
                         title_matcher: null,
                         url_matcher: null
-                    }
+                    },
+                    disabled: false
                 };
                 tab_modifier.rules.push(rule);
             }
@@ -188,7 +189,7 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
             chrome.storage.local.set({ tab_modifier: tab_modifier });
             
             chrome.tabs.executeScript(tab.id, {
-                code: `document.title = "${title}"`
+                code: `document.title = "${title}"` // TODO: there is a bug if `title` is selector or regex grammar, and reload is necessary.
             });
             // chrome.tabs.reload(tab.id); // not reload
         });

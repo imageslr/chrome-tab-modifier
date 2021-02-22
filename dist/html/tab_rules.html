@@ -45,6 +45,7 @@
                         <th>Detection</th>
                         <th>URL fragment</th>
                         <th>Icon</th>
+                        <th>Disable</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -66,6 +67,9 @@
                             <img ng-src="{{ getIconUrl(rule.tab.icon) }}" alt="" style="width:24px;">
                         </td>
                         <td ng-if="rule.tab.icon === null">Default</td>
+                        <td>
+                            <md-switch data-nodrag ng-model="rule.disabled" ng-change="disable($event, rule)" aria-label="Disable rule" class="md-warn"/>
+                        </td>
                         <td style="text-align: right;">
                             <md-button data-nodrag class="md-icon-button" ng-click="showForm($event, rule)" aria-label="Edit rule" ga-track-event="['tab-rules', 'edit-rule']">
                                 <md-icon md-svg-icon="edit" md-menu-align-target></md-icon>

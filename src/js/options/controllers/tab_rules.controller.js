@@ -106,6 +106,17 @@ app.controller('TabRulesController', ['$scope', '$routeParams', '$http', '$mdDia
         });
     };
     
+    // Disable a rule
+    $scope.disable = function (evt, rule) {
+        tab_modifier.sync();
+
+        $mdToast.show(
+            $mdToast.simple()
+                .textContent(rule.disabled ? 'The rule has been disabled' : 'The rule has been activated')
+                .position('top right')
+        );
+    };
+
     // Get icon URL for the table
     $scope.getIconUrl = function (icon) {
         if (icon === null) {

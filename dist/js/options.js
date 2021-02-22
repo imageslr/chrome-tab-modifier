@@ -84,6 +84,46 @@ app.run(['$rootScope', '$location', 'Analytics', function ($rootScope, $location
     
 }]);
 
+app.directive('inputFileButton', function () {
+    return {
+        restrict: 'E',
+        link: function (scope, elem) {
+            var button = elem.find('button'),
+                input  = elem.find('input');
+            
+            input.css({ display: 'none' });
+            
+            button.bind('click', function () {
+                input[0].click();
+            });
+        }
+    };
+});
+
+app.directive('onReadFile', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        scope: false,
+        link: function (scope, element, attrs) {
+            var fn = $parse(attrs.onReadFile);
+            
+            element.on('change', function (onChangeEvent) {
+                var reader = new FileReader();
+                
+                reader.onload = function (onLoadEvent) {
+                    scope.$apply(function () {
+                        fn(scope, {
+                            $fileContent: onLoadEvent.target.result
+                        });
+                    });
+                };
+                
+                reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
+            });
+        }
+    };
+}]);
+
 app.controller('HelpController', function () {
     
 });
@@ -338,6 +378,19 @@ app.controller('TabRulesController', ['$scope', '$routeParams', '$http', '$mdDia
         });
     };
     
+    // Disable a rule
+    $scope.disable = function (evt, rule) {
+        console.log(rule)
+        console.log(tab_modifier)
+        tab_modifier.sync();
+
+        $mdToast.show(
+            $mdToast.simple()
+                .textContent(rule.disabled ? 'The rule has been disabled' : 'The rule has been activated')
+                .position('top right')
+        );
+    };
+
     // Get icon URL for the table
     $scope.getIconUrl = function (icon) {
         if (icon === null) {
@@ -445,46 +498,6 @@ app.controller('FormModalController', ['$scope', '$mdDialog', 'rule', 'icon_list
     
 }]);
 
-app.directive('inputFileButton', function () {
-    return {
-        restrict: 'E',
-        link: function (scope, elem) {
-            var button = elem.find('button'),
-                input  = elem.find('input');
-            
-            input.css({ display: 'none' });
-            
-            button.bind('click', function () {
-                input[0].click();
-            });
-        }
-    };
-});
-
-app.directive('onReadFile', ['$parse', function ($parse) {
-    return {
-        restrict: 'A',
-        scope: false,
-        link: function (scope, element, attrs) {
-            var fn = $parse(attrs.onReadFile);
-            
-            element.on('change', function (onChangeEvent) {
-                var reader = new FileReader();
-                
-                reader.onload = function (onLoadEvent) {
-                    scope.$apply(function () {
-                        fn(scope, {
-                            $fileContent: onLoadEvent.target.result
-                        });
-                    });
-                };
-                
-                reader.readAsText((onChangeEvent.srcElement || onChangeEvent.target).files[0]);
-            });
-        }
-    };
-}]);
-
 app.factory('Rule', function () {
     
     var Rule = function (properties) {
@@ -501,6 +514,7 @@ app.factory('Rule', function () {
             title_matcher: null,
             url_matcher: null
         };
+        this.disabled     = false;
         
         angular.extend(this, properties);
     };

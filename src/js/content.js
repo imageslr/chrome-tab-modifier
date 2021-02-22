@@ -10,6 +10,7 @@ chrome.storage.local.get('tab_modifier', function (items) {
     processPage = async function () {
         // Check if a rule is available
         for (var i = 0; i < tab_modifier.rules.length; i++) {
+            if (tab_modifier.rules[i].disabled === true) continue;
             if (tab_modifier.rules[i].detection === undefined || tab_modifier.rules[i].detection === 'CONTAINS') {
                 if (location.href.indexOf(tab_modifier.rules[i].url_fragment) !== -1) {
                     rule = tab_modifier.rules[i];
