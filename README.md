@@ -1,10 +1,9 @@
-**This is a fork version of Tab Modifier with a little bit change, to support <mark>unique rules by url</mark>.**
+# Notice
 
-Here is the only change that removing duplicated rules before add a new rule:
-
-```js
-tab_modifier.rules = tab_modifier.rules.filter(({ url_fragment }) => url_fragment != tab.url)
-```
+**This is a fork version of Tab Modifier with a little bit change.**
+1. [New Feature] Support <mark>unique rules by url</mark>,
+2. [New Feature] Disable a rule temporarily,
+3. [Bug Fix] Selector grammar not working when element is lazy-loaded. 
 
 You can load unpacked extension in project `/dist` folder.
 
