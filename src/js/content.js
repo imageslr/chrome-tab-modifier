@@ -184,39 +184,6 @@ chrome.storage.local.get('tab_modifier', function (items) {
             return true;
         };
         
-        // Set title
-        if (rule.tab.title !== null) {
-            if (document.title !== null) {
-                document.title = await processTitle(location.href, document.title);
-            }
-        }
-        
-        var title_changed_by_me = false, observer_title;
-        
-        // Set up a new observer
-        observer_title = new window.WebKitMutationObserver(function (mutations) {
-            if (title_changed_by_me === true) {
-                title_changed_by_me = false;
-            } else {
-                mutations.forEach(async function () {
-                    if (rule.tab.title !== null) {
-                        document.title = await processTitle(location.href, document.title);
-                    }
-                    
-                    title_changed_by_me = true;
-                });
-            }
-        });
-        
-        // Observe when the website has changed the title
-        if (document.querySelector('head > title') !== null) {
-            observer_title.observe(document.querySelector('head > title'), {
-                subtree: true,
-                characterresponse: true,
-                childList: true
-            });
-        }
-        
         // Pin the tab
         if (rule.tab.pinned === true) {
             chrome.runtime.sendMessage({ action: 'setPinned' });
@@ -294,6 +261,39 @@ chrome.storage.local.get('tab_modifier', function (items) {
         // Mute the tab
         if (rule.tab.muted === true) {
             chrome.runtime.sendMessage({ action: 'setMuted' });
+        }
+
+        // Set title
+        if (rule.tab.title !== null) {
+            if (document.title !== null) {
+                document.title = await processTitle(location.href, document.title);
+            }
+        }
+        
+        var title_changed_by_me = false, observer_title;
+        
+        // Set up a new observer
+        observer_title = new window.WebKitMutationObserver(function (mutations) {
+            if (title_changed_by_me === true) {
+                title_changed_by_me = false;
+            } else {
+                mutations.forEach(async function () {
+                    if (rule.tab.title !== null) {
+                        document.title = await processTitle(location.href, document.title);
+                    }
+                    
+                    title_changed_by_me = true;
+                });
+            }
+        });
+        
+        // Observe when the website has changed the title
+        if (document.querySelector('head > title') !== null) {
+            observer_title.observe(document.querySelector('head > title'), {
+                subtree: true,
+                characterresponse: true,
+                childList: true
+            });
         }
     };
     
